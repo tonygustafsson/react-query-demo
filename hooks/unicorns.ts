@@ -60,7 +60,7 @@ export const useUnicornMutations = () => {
     },
     {
       onSuccess: (response, updatedUnicorn) => {
-        queryClient.invalidateQueries(["unicorns"]);
+        queryClient.setQueryData(["unicorns"], response);
         queryClient.setQueryData(
           ["unicorn", updatedUnicorn.id],
           updatedUnicorn
@@ -87,7 +87,7 @@ export const useUnicornMutations = () => {
     {
       onSuccess: (_, id) => {
         queryClient.invalidateQueries(["unicorns"]);
-        queryClient.invalidateQueries(["unicorn", id]);
+        queryClient.removeQueries(["unicorn"]);
         console.log("remove", { id });
       },
       onError: (error) => {
