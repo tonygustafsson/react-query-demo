@@ -7,3 +7,12 @@ The backend is a simple NextJS API that manipulates an array, so changes will be
 Examples includes CRUD (Create, Read, Update, Delete) operations.
 
 More work will be done on this project, so stay tuned!
+
+## Run it
+
+```
+git clone https://github.com/tonygustafsson/react-query-demo.git
+cd react-query-demo
+npm install
+npm run dev
+```
