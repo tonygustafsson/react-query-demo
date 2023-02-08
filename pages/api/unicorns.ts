@@ -1,24 +1,31 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import createGuid from "@/utils/createGuid";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export type Unicorn = {
+  id?: string;
   name: string;
   age: number;
   ability: string;
 };
 
-const data: Unicorn[] = [
-  { name: "Cloudberry", age: 65, ability: "Create rainbows" },
-  { name: "Glimmer", age: 34, ability: "Spread stardust" },
+let data: Unicorn[] = [
+  { id: createGuid(), name: "Cloudberry", age: 65, ability: "Create rainbows" },
+  { id: createGuid(), name: "Glimmer", age: 34, ability: "Spread stardust" },
 ];
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Unicorn | Unicorn[]>
+  res: NextApiResponse<Unicorn | Unicorn[] | { error: string }>
 ) {
   if (req.method === "GET" && req.query.id) {
     // Get specific unicorn
-    const unicorn = data[Number(req.query.id)];
+    const unicorn = data.find((unicorn) => unicorn.id === req.query.id);
+
+    if (!unicorn) {
+      return res.status(404).json({ error: "Unicorn not found" });
+    }
+
     return res.status(200).json(unicorn);
   }
 
@@ -38,10 +45,11 @@ export default function handler(
 
   if (req.method === "PUT") {
     // Update unicorn
-    const update = JSON.parse(req.body);
-    const { id, ...unicorn } = update;
+    const updatedUnicorn = JSON.parse(req.body);
 
-    data[id] = unicorn;
+    data = data.map((unicorn) => ({
+      ...(unicorn.id === updatedUnicorn.id ? updatedUnicorn : unicorn),
+    }));
 
     return res.status(200).json(data);
   }

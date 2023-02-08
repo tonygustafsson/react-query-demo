@@ -1,8 +1,6 @@
 import type { Unicorn } from "@/pages/api/unicorns";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export type UnicornWithId = Partial<Unicorn> & { id?: number };
-
 const sleep = async () => await new Promise((r) => setTimeout(r, 1000));
 
 export const useGetUnicorns = () =>
@@ -15,7 +13,7 @@ export const useGetUnicorns = () =>
     return json;
   });
 
-export const useGetUnicorn = (id: number) =>
+export const useGetUnicorn = (id: string) =>
   useQuery<Unicorn>([`unicorn_${id}`], async () => {
     await sleep(); // simulate slow network
 
@@ -52,7 +50,7 @@ export const useUnicornMutations = () => {
   );
 
   const { mutate: update, isLoading: updateIsLoading } = useMutation(
-    async (data: UnicornWithId) => {
+    async (data: Unicorn) => {
       const response = await fetch("http://localhost:3000/api/unicorns", {
         method: "PUT",
         body: JSON.stringify(data),
@@ -61,9 +59,12 @@ export const useUnicornMutations = () => {
       return response.json();
     },
     {
-      onSuccess: (response, { id, ...updatedUnicorn }) => {
+      onSuccess: (response, updatedUnicorn) => {
         queryClient.invalidateQueries(["unicorns"]);
-        queryClient.setQueryData([`unicorn_${id}`], updatedUnicorn);
+        queryClient.setQueryData(
+          [`unicorn_${updatedUnicorn.id}`],
+          updatedUnicorn
+        );
         //queryClient.setQueryData(["unicorns"], data);
 
         console.log("update", { response });
@@ -75,7 +76,7 @@ export const useUnicornMutations = () => {
   );
 
   const { mutate: remove, isLoading: removeIsLoading } = useMutation(
-    async (id: number) => {
+    async (id: string) => {
       const response = await fetch("http://localhost:3000/api/unicorns", {
         method: "DELETE",
         body: JSON.stringify(id),

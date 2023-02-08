@@ -1,13 +1,11 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import React, { useReducer, useState } from "react";
-import {
-  UnicornWithId,
-  useGetUnicorns,
-  useUnicornMutations,
-} from "@/hooks/unicorns";
+import { useGetUnicorns, useUnicornMutations } from "@/hooks/unicorns";
 import ShowUnicorn from "@/components/ShowUnicorn";
 import Loader from "@/components/Loader";
+import { Unicorn } from "./api/unicorns";
+import createGuid from "@/utils/createGuid";
 
 export default function Home() {
   const { data: unicorns, isFetching } = useGetUnicorns();
@@ -22,6 +20,7 @@ export default function Home() {
     const ability = target.ability.value;
 
     create({
+      id: createGuid(),
       name,
       age,
       ability,
@@ -31,7 +30,7 @@ export default function Home() {
   };
 
   const [editState, setEditState] = useReducer(
-    (prev: UnicornWithId, next: UnicornWithId) => {
+    (prev: Unicorn, next: Unicorn) => {
       return { ...prev, ...next };
     },
     {
@@ -42,9 +41,9 @@ export default function Home() {
     }
   );
 
-  const [view, setView] = useState<number>();
+  const [view, setView] = useState<string>();
 
-  const updateUnicorn = (data: UnicornWithId) => {
+  const updateUnicorn = (data: Unicorn) => {
     if (
       typeof data.id === "undefined" ||
       !data.name ||
@@ -54,10 +53,11 @@ export default function Home() {
       return;
 
     update(data);
-    setEditState({ id: undefined });
+    setEditState({ ...editState, id: undefined });
   };
 
-  const removeUnicorn = (id: number) => {
+  const removeUnicorn = (id?: string) => {
+    if (!id) return;
     remove(id);
   };
 
@@ -91,10 +91,10 @@ export default function Home() {
             </thead>
 
             <tbody>
-              {unicorns?.map((item, id) => (
-                <tr key={`item-${item.name}`}>
+              {unicorns?.map((item) => (
+                <tr key={`item-${item.id}`}>
                   <td>
-                    {editState.id === id ? (
+                    {editState.id === item.id ? (
                       <input
                         type="text"
                         name="name"
@@ -111,7 +111,7 @@ export default function Home() {
                     )}
                   </td>
                   <td>
-                    {editState.id === id ? (
+                    {editState.id === item.id ? (
                       <input
                         type="number"
                         name="age"
@@ -128,7 +128,7 @@ export default function Home() {
                     )}
                   </td>
                   <td>
-                    {editState.id === id ? (
+                    {editState.id === item.id ? (
                       <input
                         type="text"
                         name="ability"
@@ -146,7 +146,7 @@ export default function Home() {
                   </td>
                   <td>
                     <div style={{ display: "flex", gap: 8 }}>
-                      {editState.id === id ? (
+                      {editState.id === item.id ? (
                         <>
                           <button
                             onClick={() => updateUnicorn({ ...editState })}
@@ -154,18 +154,22 @@ export default function Home() {
                             Save 💾
                           </button>
                           <button
-                            onClick={() => setEditState({ id: undefined })}
+                            onClick={() =>
+                              setEditState({ ...editState, id: undefined })
+                            }
                           >
                             Cancel ❌
                           </button>
                         </>
                       ) : (
-                        <button onClick={() => setEditState({ id, ...item })}>
+                        <button onClick={() => setEditState({ ...item })}>
                           Edit ✏️
                         </button>
                       )}
-                      <button onClick={() => setView(id)}>View 🔍</button>
-                      <button onClick={() => removeUnicorn(id)}>Kill ⚔️</button>
+                      <button onClick={() => setView(item.id)}>View 🔍</button>
+                      <button onClick={() => removeUnicorn(item.id)}>
+                        Kill ⚔️
+                      </button>
                     </div>
                   </td>
                 </tr>

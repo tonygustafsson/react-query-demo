@@ -1,10 +1,11 @@
 import { useGetUnicorn } from "@/hooks/unicorns";
+import { Unicorn } from "@/pages/api/unicorns";
 import Loader from "./Loader";
 
-const ShowUnicorn = ({ id }: { id: number }) => {
-  const { data: unicorn, isFetching } = useGetUnicorn(id);
+const ShowUnicorn = ({ id }: { id: Unicorn["id"] }) => {
+  const { data: unicorn, isFetching } = useGetUnicorn(id || "");
 
-  if (!unicorn && !isFetching) return null;
+  if ((!unicorn || !unicorn.id) && !isFetching) return null;
 
   return (
     <div>
@@ -18,6 +19,11 @@ const ShowUnicorn = ({ id }: { id: number }) => {
             <tr>
               <td>Name:</td>
               <td>{unicorn?.name}</td>
+            </tr>
+
+            <tr>
+              <td>ID:</td>
+              <td>{unicorn?.id}</td>
             </tr>
 
             <tr>
