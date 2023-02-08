@@ -151,24 +151,24 @@ export default function Home() {
                           <button
                             onClick={() => updateUnicorn({ ...editState })}
                           >
-                            Save 💾
+                            💾 Save
                           </button>
                           <button
                             onClick={() =>
                               setEditState({ ...editState, id: undefined })
                             }
                           >
-                            Cancel ❌
+                            ❌ Cancel
                           </button>
                         </>
                       ) : (
                         <button onClick={() => setEditState({ ...item })}>
-                          Edit ✏️
+                          ✏️ Edit
                         </button>
                       )}
-                      <button onClick={() => setView(item.id)}>View 🔍</button>
+                      <button onClick={() => setView(item.id)}>🔍 View</button>
                       <button onClick={() => removeUnicorn(item.id)}>
-                        Kill ⚔️
+                        ⚔️ Kill
                       </button>
                     </div>
                   </td>
@@ -192,12 +192,12 @@ export default function Home() {
             style={{
               marginBlock: 12,
               marginInline: 8,
-              width: 80,
+              width: 120,
               height: 32,
-              fontSize: 20,
+              fontSize: 16,
             }}
           >
-            Save
+            💾 Save
           </button>
         </form>
 
