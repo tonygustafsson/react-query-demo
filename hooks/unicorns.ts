@@ -14,7 +14,7 @@ export const useGetUnicorns = () =>
   });
 
 export const useGetUnicorn = (id: string) =>
-  useQuery<Unicorn>([`unicorn_${id}`], async () => {
+  useQuery<Unicorn>(["unicorn", id], async () => {
     await sleep(); // simulate slow network
 
     const response = await fetch(`http://localhost:3000/api/unicorns?id=${id}`);
@@ -62,7 +62,7 @@ export const useUnicornMutations = () => {
       onSuccess: (response, updatedUnicorn) => {
         queryClient.invalidateQueries(["unicorns"]);
         queryClient.setQueryData(
-          [`unicorn_${updatedUnicorn.id}`],
+          ["unicorn", updatedUnicorn.id],
           updatedUnicorn
         );
         //queryClient.setQueryData(["unicorns"], data);
@@ -87,7 +87,7 @@ export const useUnicornMutations = () => {
     {
       onSuccess: (_, id) => {
         queryClient.invalidateQueries(["unicorns"]);
-        queryClient.invalidateQueries([`unicorn_${id}`]);
+        queryClient.invalidateQueries(["unicorn", id]);
         console.log("remove", { id });
       },
       onError: (error) => {
